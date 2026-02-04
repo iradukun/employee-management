@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
-import { User } from './modules/users/entities/user.entity';
-import { Role } from './modules/users/entities/role.entity';
-import { Verification } from './modules/users/entities/verification.entity';
-import { Attendance } from './modules/attendance/entities/attendance.entity';
+import { Module } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { Attendance } from './modules/attendance/entities/attendance.entity'
+import { AuthModule } from './modules/auth/auth.module'
+import { Role } from './modules/users/entities/role.entity'
+import { User } from './modules/users/entities/user.entity'
+import { Verification } from './modules/users/entities/verification.entity'
+import { UsersModule } from './modules/users/users.module'
 
 @Module({
   imports: [
@@ -22,6 +22,16 @@ import { Attendance } from './modules/attendance/entities/attendance.entity';
         database: configService.get<string>('DB_NAME', 'employee_management'),
         entities: [User, Role, Verification, Attendance],
         synchronize: true,
+      }),
+      inject: [ConfigService],
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST', 'localhost'),
+          port: configService.get('REDIS_PORT', 6379),
+        },
       }),
       inject: [ConfigService],
     }),

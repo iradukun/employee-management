@@ -1,4 +1,4 @@
-import { Role } from 'generated/prisma/client';
+import { Role } from '../../users/entities/role.entity';
 
 export class LoginPayload {
   id: string;

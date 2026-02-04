@@ -1,4 +1,4 @@
-import { Role } from 'generated/prisma/client';
+import { Role } from '../../modules/users/entities/role.entity';
 import { Request } from 'express';
 
 export type TokenProps = {
