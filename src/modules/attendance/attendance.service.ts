@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bull'
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Queue } from 'bull'
-import { IsNull, Repository } from 'typeorm'
+import { FindManyOptions, IsNull, Repository } from 'typeorm'
 import { User } from '../users/entities/user.entity'
 import { Attendance } from './entities/attendance.entity'
 
@@ -13,6 +13,14 @@ export class AttendanceService {
     private attendanceRepository: Repository<Attendance>,
     @InjectQueue('attendance') private attendanceQueue: Queue,
   ) {}
+
+  async findAll(options?: FindManyOptions<Attendance>): Promise<Attendance[]> {
+    return this.attendanceRepository.find({
+      ...options,
+      relations: ['user'],
+      order: { entryTime: 'DESC' },
+    });
+  }
 
   async clockIn (user: User): Promise<Attendance> {
     // Check if user is already clocked in (has an entry without exit)

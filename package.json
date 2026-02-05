@@ -1,5 +1,5 @@
 {
-  "name": "musco-games-api",
+  "name": "employee-management-api",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -9,6 +9,9 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "db:init": "ts-node scripts/init-db.ts",
+    "db:seed": "ts-node scripts/seed.ts",
+    "setup": "npm run db:init && npm run db:seed",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main",
@@ -90,6 +93,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    }
   }
 }

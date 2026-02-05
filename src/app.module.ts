@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { BullModule } from '@nestjs/bull'
 import { Attendance } from './modules/attendance/entities/attendance.entity'
 import { AuthModule } from './modules/auth/auth.module'
 import { Role } from './modules/users/entities/role.entity'

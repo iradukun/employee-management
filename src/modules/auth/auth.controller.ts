@@ -10,9 +10,9 @@ import { ApiResponse } from 'src/lib/types/api-response'
 import { User } from '../users/entities/user.entity'
 import { AuthService } from './auth.service'
 import { LoginPayload } from './dto/login-payload.dto'
-import { loginDto } from './dto/login.dto'
+import { LoginDto } from './dto/login.dto'
 import { ResetPasswordDTO } from './dto/ResetPasswordDTO.dto'
-import { SignupDto } from './dto/signup-dto'
+import { SignupDto } from './dto/signup.dto'
 import { ValidateCodeDTO } from './dto/ValidateCodeDTO.dto'
 import { VerifyCodeDto } from './dto/verify-code-dto'
 
@@ -24,9 +24,9 @@ export class AuthController {
   // credential login
   @Allow()
   @Post('/login')
-  @ApiBody({ type: loginDto })
+  @ApiBody({ type: LoginDto })
   @SwaggerResponse({ type: LoginPayload })
-  async login (@Body() loginDto: loginDto): Promise<ApiResponse<LoginPayload>> {
+  async login (@Body() loginDto: LoginDto): Promise<ApiResponse<LoginPayload>> {
     return new ApiResponse<LoginPayload>(
       true,
       'Logged in Successfully',

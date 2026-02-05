@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common'
 import {
   ApiBearerAuth,
@@ -19,6 +20,9 @@ import {
   ApiResponse as SwaggerResponse,
 } from '@nestjs/swagger'
 import { AuthGuard } from 'src/guards/auth.guard'
+import { RolesGuard } from 'src/guards/roles.guard'
+import { Roles } from 'src/decorators/roles.decorator'
+import { CurrentUser } from 'src/decorators/current-user.decorator'
 import { ApiResponse } from 'src/lib/types/api-response'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -27,12 +31,13 @@ import { UsersService } from './users.service'
 
 @Controller('users')
 @ApiTags('users')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth()
 export class UsersController {
   constructor (private readonly usersService: UsersService) {}
 
   @Get()
+  @Roles('ADMIN')
   @ApiOperation({ summary: 'Get all users' })
   @SwaggerResponse({
     status: 200,
@@ -61,7 +66,13 @@ export class UsersController {
     description: 'The found record',
     type: User,
   })
-  async findOne (@Param('id') id: string) {
+  async findOne (@Param('id') id: string, @CurrentUser() currentUser: User) {
+    // Allow if admin or own profile
+    const isAdmin = currentUser.roles.some(r => r.name === 'ADMIN');
+    if (!isAdmin && currentUser.id !== id) {
+        throw new ForbiddenException('You can only view your own profile');
+    }
+
     const user = await this.usersService.findOne({ id })
     if (!user) {
       throw new NotFoundException('User not found')
@@ -70,6 +81,7 @@ export class UsersController {
   }
 
   @Post()
+  @Roles('ADMIN')
   @ApiOperation({ summary: 'Create a new user' })
   @SwaggerResponse({
     status: 201,
@@ -90,7 +102,17 @@ export class UsersController {
     type: User,
   })
   @ApiBody({ type: UpdateUserDto })
-  async update (@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update (@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @CurrentUser() currentUser: User) {
+    // Allow if admin or own profile
+    const isAdmin = currentUser.roles.some(r => r.name === 'ADMIN');
+    if (!isAdmin && currentUser.id !== id) {
+        throw new ForbiddenException('You can only update your own profile');
+    }
+    // Prevent non-admins from updating roles
+    if (!isAdmin && updateUserDto.roles) {
+        throw new ForbiddenException('You cannot update your own roles');
+    }
+
     const user = await this.usersService.updateUser({
       where: { id },
       data: updateUserDto,
@@ -99,6 +121,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Roles('ADMIN')
   @ApiOperation({ summary: 'Delete a user' })
   @SwaggerResponse({
     status: 200,

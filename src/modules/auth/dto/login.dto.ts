@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class loginDto {
+export class LoginDto {
   @ApiProperty()
   @IsString({ message: 'Credentail must be a string' })
   @IsOptional()

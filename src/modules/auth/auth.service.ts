@@ -19,8 +19,8 @@ import { UsersService } from '../users/users.service'
 import { ChangePasswordDto } from './dto/change-password.dto'
 import { CreateAdminDto } from './dto/create-admin.dto'
 import { LoginPayload } from './dto/login-payload.dto'
-import { loginDto } from './dto/login.dto'
-import { SignupDto } from './dto/signup-dto'
+import { LoginDto } from './dto/login.dto'
+import { SignupDto } from './dto/signup.dto'
 
 @Injectable()
 export class AuthService {
@@ -53,7 +53,7 @@ export class AuthService {
     return 3
   }
 
-  async login (loginDto: loginDto): Promise<LoginPayload> {
+  async login (loginDto: LoginDto): Promise<LoginPayload> {
     let user: User | null = null
     const credentialType = await this.validateAll(loginDto.credential)
     log('The credential type is ' + credentialType)

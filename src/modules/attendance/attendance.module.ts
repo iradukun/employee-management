@@ -7,6 +7,7 @@ import { UsersModule } from '../users/users.module'
 import { AttendanceController } from './attendance.controller'
 import { AttendanceProcessor } from './attendance.processor'
 import { AttendanceService } from './attendance.service'
+import { ReportsService } from './reports.service'
 import { Attendance } from './entities/attendance.entity'
 
 @Module({
@@ -19,7 +20,7 @@ import { Attendance } from './entities/attendance.entity'
     MailModule,
   ],
   controllers: [AttendanceController],
-  providers: [AttendanceService, AttendanceProcessor, JwtService],
+  providers: [AttendanceService, AttendanceProcessor, ReportsService, JwtService],
   exports: [AttendanceService],
 })
 export class AttendanceModule {}

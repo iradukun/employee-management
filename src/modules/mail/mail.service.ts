@@ -1,32 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { render } from '@react-email/render';
+import { Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { render } from '@react-email/render'
 // import { EmailParams, MailerSend, Recipient, Sender } from 'mailersend';
 // import { EmailOptions } from '../../utils/mailersend';
-import { ResearchGroupInvitationEmail } from './templates/ResearchGroupInvitationEmail';
-import { sendEmail } from 'src/lib/utils/resend';
-import { ResetPasswordEmail } from './templates/ResetPasswordEmail';
-import { UserJoinedGroupEmail } from './templates/UserJoinedGroupEmail';
-import { VerificationEmail } from './templates/VerificationEmail';
-import { WelcomeEmail } from './templates/WelcomeEmail';
+import { sendEmail } from 'src/lib/utils/resend'
+import { ResearchGroupInvitationEmail } from './templates/ResearchGroupInvitationEmail'
+import { ResetPasswordEmail } from './templates/ResetPasswordEmail'
+import { UserJoinedGroupEmail } from './templates/UserJoinedGroupEmail'
+import { VerificationEmail } from './templates/VerificationEmail'
+import { WelcomeEmail } from './templates/WelcomeEmail'
 
 type AttachmentType = {
-  filename: string;
-  content: Buffer;
-  contentType?: string;
-};
+  filename: string
+  content: Buffer
+  contentType?: string
+}
 
 type MailParameters = {
-  to: string;
-  subject: string;
-  body?: string;
-  html: string;
-  attachments?: AttachmentType[];
-};
+  to: string
+  subject: string
+  body?: string
+  html: string
+  attachments?: AttachmentType[]
+}
 
 @Injectable()
 export class MailService {
-  constructor(private readonly configService: ConfigService) {
+  constructor (private readonly configService: ConfigService) {
     // Commented out MailerSend implementation
     // console.log('MailService constructor called');
     // const apiKey = this.configService.get('MAILERSEND_API_KEY');
@@ -39,7 +39,7 @@ export class MailService {
     // console.log('MailerSend instance created');
   }
 
-  async sendEmailWithResend({
+  async sendEmailWithResend ({
     to,
     subject,
     body,
@@ -52,15 +52,15 @@ export class MailService {
         subject: subject,
         html: (html || body) ?? '',
         attachments,
-      });
-      console.log('Email sent with Resend', response);
+      })
+      console.log('Email sent with Resend', response)
     } catch (error) {
-      console.log('Error sending email with Resend', error);
-      throw error;
+      console.log('Error sending email with Resend', error)
+      throw error
     }
   }
 
-  async sendEmail({
+  async sendEmail ({
     to,
     subject,
     body,
@@ -73,8 +73,8 @@ export class MailService {
       body,
       html,
       attachments,
-    });
-    return this.sendEmailWithResend({ to, subject, body, html, attachments });
+    })
+    return this.sendEmailWithResend({ to, subject, body, html, attachments })
   }
 
   /**
@@ -83,24 +83,24 @@ export class MailService {
    * @param resetCode The code for resetting the password.
    * @param fullName The full name of the recipient.
    */
-  async sendPasswordResetEmail(
+  async sendPasswordResetEmail (
     to: string,
     resetCode: string,
     fullName: string,
   ) {
-    const subject = 'Reset Your Password';
+    const subject = 'Reset Your Password'
     const emailHtml = await render(
       ResetPasswordEmail({
         resetCode,
         fullName,
       }),
-    );
+    )
 
     await this.sendEmail({
       to: to,
       subject,
       html: emailHtml,
-    });
+    })
   }
 
   /**
@@ -109,24 +109,24 @@ export class MailService {
    * @param verificationCode The code to verify the user's email address.
    * @param fullName The full name of the recipient.
    */
-  async sendVerificationEmail(
+  async sendVerificationEmail (
     to: string,
     verificationCode: string,
     fullName: string,
   ) {
-    const subject = 'Verify Your Email Address';
+    const subject = 'Verify Your Email Address'
     const emailHtml = await render(
       VerificationEmail({
         verificationCode,
         fullName,
       }),
-    );
+    )
 
     await this.sendEmail({
       to: to,
       subject,
       html: emailHtml,
-    });
+    })
   }
 
   /**
@@ -135,46 +135,46 @@ export class MailService {
    * @param fullName The full name of the recipient.
    * @param password The initial password for the account.
    */
-  async sendWelcomeEmail(to: string, fullName: string, password: string) {
-    const subject = 'Welcome to GradVers - Your Academic Journey Starts Here!';
+  async sendWelcomeEmail (to: string, fullName: string, password: string) {
+    const subject = 'Welcome to GradVers - Your Academic Journey Starts Here!'
     const emailHtml = await render(
       WelcomeEmail({
         fullName,
         email: to,
         password,
       }),
-    );
+    )
 
     await this.sendEmail({
       to: to,
       subject,
       html: emailHtml,
-    });
+    })
   }
 
-  async sendUserJoinedGroupEmail(
+  async sendUserJoinedGroupEmail (
     to: string,
     fullName: string,
     groupName: string,
     inviterName: string,
   ) {
-    const subject = `You've joined ${groupName}! 🎓`;
+    const subject = `You've joined ${groupName}! 🎓`
     const emailHtml = await render(
       UserJoinedGroupEmail({
         fullName,
         groupName,
         inviterName,
       }),
-    );
+    )
 
     await this.sendEmail({
       to,
       subject,
       html: emailHtml,
-    });
+    })
   }
 
-  async sendResearchGroupInvitationEmail(
+  async sendResearchGroupInvitationEmail (
     to: string,
     inviteeName: string | undefined,
     groupName: string,
@@ -182,7 +182,7 @@ export class MailService {
     invitationLink: string,
     message?: string,
   ): Promise<void> {
-    const subject = `Invitation to join ${groupName} 🎓`;
+    const subject = `Invitation to join ${groupName} 🎓`
     const emailHtml = await render(
       ResearchGroupInvitationEmail({
         inviteeName,
@@ -191,12 +191,12 @@ export class MailService {
         message,
         invitationLink,
       }),
-    );
+    )
 
     await this.sendEmail({
       to,
       subject,
       html: emailHtml,
-    });
+    })
   }
 }

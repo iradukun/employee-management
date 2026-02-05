@@ -23,7 +23,7 @@ export class ReportsService {
       });
     });
 
-    return (await workbook.xlsx.writeBuffer()) as Buffer;
+    return (await workbook.xlsx.writeBuffer()) as unknown as Buffer;
   }
 
   async generatePdf(attendances: Attendance[]): Promise<Buffer> {

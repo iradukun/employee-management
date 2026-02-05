@@ -1,15 +1,13 @@
-import 'dotenv/config';
-import { Attachment, Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import 'dotenv/config'
+import { Attachment, Resend } from 'resend'
 
 export type EmailOptions = {
-  to: string;
-  subject: string;
-  html: string;
-  from?: string;
-  attachments?: Attachment[];
-};
+  to: string
+  subject: string
+  html: string
+  from?: string
+  attachments?: Attachment[]
+}
 
 /**
  * Send an email using Resend.
@@ -19,6 +17,15 @@ export type EmailOptions = {
  * @param options.html - The HTML content of the email.
  */
 export const sendEmail = async (options: EmailOptions) => {
+  const apiKey = process.env.RESEND_API_KEY
+
+  if (!apiKey) {
+    console.warn('RESEND_API_KEY is not defined. Email sending skipped.')
+    return { error: 'Missing API Key' }
+  }
+
+  const resend = new Resend(apiKey)
+
   const response = await resend.emails.send({
     from: options.from || 'Gradverse <onboarding@gradvers.com>',
     to: options.to,
@@ -32,6 +39,6 @@ export const sendEmail = async (options: EmailOptions) => {
       },
       ...(options.attachments || []),
     ],
-  });
-  return response;
-};
+  })
+  return response
+}

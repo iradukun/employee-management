@@ -19,8 +19,8 @@ async function bootstrap() {
 
   // swagger
   const config = new DocumentBuilder()
-    .setTitle('Musco Games APIs')
-    .setDescription('eSports API description')
+    .setTitle('Employee Management API')
+    .setDescription('API documentation for the Employee Management System')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -28,7 +28,7 @@ async function bootstrap() {
   config.servers = [
     {
       url: process.env.APP_URL || `http://localhost:${appPort}`,
-      description: 'Deployed',
+      description: 'Local Server',
     },
   ];
   const documentFactory = () => SwaggerModule.createDocument(app, config);
@@ -42,10 +42,7 @@ async function bootstrap() {
 
   // enable cors with specific configuration for file serving
   app.enableCors({
-    origin: [
-      'http://localhost:300',
-      ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []), // Custom frontend URL from env
-    ],
+    origin: '*',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
@@ -54,6 +51,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AppExceptionFilter());
   await app.listen(appPort, () => {
     console.log(`Server is running on port http://localhost:${appPort}`);
+    console.log(`Swagger Docs available at http://localhost:${appPort}/api-docs`);
   });
 }
 
