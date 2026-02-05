@@ -74,7 +74,21 @@ export class AuthService {
     }
 
     if (!user.isVerified) {
-      throw new UnauthorizedException('User not verified')
+      // Auto resend verification email if user attempts to login but is not verified
+      try {
+        await this.resendVerificationEmail(user.email)
+        console.log(
+          `Resent verification email to unverified user: ${user.email}`,
+        )
+      } catch (err) {
+        console.error(
+          `Failed to resend verification email to ${user.email}`,
+          err,
+        )
+      }
+      throw new UnauthorizedException(
+        'User not verified. A new verification code has been sent to your email.',
+      )
     }
 
     const tokenProps: TokenProps = {
@@ -118,8 +132,11 @@ export class AuthService {
           'User with this email already exists. Please login.',
         )
       }
+
+      // If user exists but is not verified, resend the verification code
+      await this.resendVerificationEmail(existingUser.email)
       throw new BadRequestException(
-        'User with this email already exists but is not verified. Please verify your account.',
+        'User with this email already exists but is not verified. A new verification code has been sent to your email.',
       )
     }
 
@@ -255,7 +272,10 @@ export class AuthService {
 
     // Send welcome email
     try {
-      await this.mailService.sendWelcomeEmail(user.email, `${user.firstName} ${user.lastName}`)
+      await this.mailService.sendWelcomeEmail(
+        user.email,
+        `${user.firstName} ${user.lastName}`,
+      )
     } catch (error) {
       console.log('Error sending welcome email', error)
     }
