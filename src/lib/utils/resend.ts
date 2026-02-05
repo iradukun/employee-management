@@ -26,19 +26,28 @@ export const sendEmail = async (options: EmailOptions) => {
 
   const resend = new Resend(apiKey)
 
-  const response = await resend.emails.send({
-    from: options.from || 'Gradverse <onboarding@gradvers.com>',
-    to: options.to,
-    subject: options.subject,
-    html: options.html,
-    attachments: [
-      {
-        path: 'https://gradvers.com/logo.png',
-        filename: 'logo.png',
-        contentId: 'logo-image',
-      },
-      ...(options.attachments || []),
-    ],
-  })
-  return response
+  try {
+    const response = await resend.emails.send({
+      from: options.from || 'Employee Management <onboarding@resend.dev>',
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+      attachments: options.attachments || [],
+    })
+    return response
+  } catch (error) {
+    console.warn(
+      'Failed to send email via Resend. Falling back to local logging.',
+      error,
+    )
+    console.log('--- EMAIL SIMULATION ---')
+    console.log('To:', options.to)
+    console.log('Subject:', options.subject)
+    console.log(
+      'Content (HTML preview):',
+      options.html.substring(0, 500) + '...',
+    )
+    console.log('------------------------')
+    return { id: 'simulated-email-id', error: null }
+  }
 }

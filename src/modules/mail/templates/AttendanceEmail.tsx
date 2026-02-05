@@ -10,19 +10,21 @@ import {
 } from '@react-email/components';
 import { TailwindWrapper } from './Tailwind';
 
-interface WelcomeEmailProps {
+interface AttendanceEmailProps {
   fullName: string;
-  email: string;
+  type: 'Clock In' | 'Clock Out';
+  time: string;
 }
 
-export const WelcomeEmail = ({
+export const AttendanceEmail = ({
   fullName,
-  email,
-}: WelcomeEmailProps) => {
+  type,
+  time,
+}: AttendanceEmailProps) => {
   return (
     <Html>
       <Head />
-      <Preview>Welcome to Employee Management System</Preview>
+      <Preview>Attendance Notification: {type}</Preview>
       <Body className="bg-gray-100 font-sans">
         <TailwindWrapper>
           <Container className="bg-white mx-auto py-8 px-4 mb-16 rounded-lg shadow-sm">
@@ -35,14 +37,17 @@ export const WelcomeEmail = ({
                 Hello {fullName},
               </Text>
               <Text className="text-gray-700 text-base mb-4">
-                Welcome to the team! Your account has been successfully created.
+                This is a notification that you have successfully <strong>{type === 'Clock In' ? 'clocked in' : 'clocked out'}</strong>.
               </Text>
-              <Text className="text-gray-700 text-base mb-4">
-                You can now log in using your email address: <strong>{email}</strong>
-              </Text>
-              <Text className="text-gray-700 text-base mb-4">
-                Please remember to complete your profile and set up your preferences.
-              </Text>
+              
+              <Section className="bg-gray-100 p-4 rounded-md my-6">
+                <Text className="text-gray-700 text-base font-semibold">
+                  Type: <span className={type === 'Clock In' ? 'text-green-600' : 'text-blue-600'}>{type}</span>
+                </Text>
+                <Text className="text-gray-700 text-base font-semibold mt-2">
+                  Time: {time}
+                </Text>
+              </Section>
             </Section>
 
             <Section className="mt-8 border-t border-gray-200 pt-4">

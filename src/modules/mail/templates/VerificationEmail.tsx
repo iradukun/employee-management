@@ -4,7 +4,6 @@ import {
   Head,
   Heading,
   Html,
-  Img,
   Preview,
   Section,
   Text,
@@ -24,49 +23,40 @@ export const VerificationEmail = ({
     <Html>
       <Head />
       <Preview>Verify your email address</Preview>
-      <Body className="bg-[#f6f9fc] font-sans">
+      <Body className="bg-gray-100 font-sans">
         <TailwindWrapper>
-          <Container className="bg-white mx-auto py-5 pb-12 mb-16">
-            <div className="flex items-center mb-8">
-              <Img
-                src="cid:logo-image"
-                width="25"
-                height="25"
-                alt="GradVers Logo"
-                className="object-contain"
-              />
-              <span className="text-2xl font-bold text-[#2D2D2D] ml-2">
-                GradVers
-              </span>
-            </div>
-            <Heading className="text-primary text-2xl font-bold my-10 text-center">
-              Email Verification
+          <Container className="bg-white mx-auto py-8 px-4 mb-16 rounded-lg shadow-sm">
+            <Heading className="text-2xl font-bold text-gray-800 text-center mb-6">
+              Employee Management System
             </Heading>
-            <Text className="text-[#333] text-base my-6">
-              Hello {fullName},
-            </Text>
-            <Text className="text-[#333] text-base my-6">
-              Thank you for registering. Please use the verification code below
-              to verify your email address:
-            </Text>
-            <Section className="bg-[#f4f4f4] rounded p-3.5 my-4 text-center">
-              <Text className="text-primary text-3xl font-bold tracking-widest">
-                {verificationCode}
+            
+            <Section>
+              <Text className="text-gray-700 text-base mb-4">
+                Hello {fullName},
+              </Text>
+              <Text className="text-gray-700 text-base mb-4">
+                Please use the following code to verify your email address:
+              </Text>
+              
+              <Section className="bg-gray-100 p-4 rounded-md text-center my-6">
+                <Text className="text-2xl font-bold tracking-widest text-brand">
+                  {verificationCode}
+                </Text>
+              </Section>
+
+              <Text className="text-gray-700 text-base mb-4">
+                If you didn't request this verification, please ignore this email.
               </Text>
             </Section>
-            <Text className="text-[#333] text-base my-6">
-              If you didn't request this verification, please ignore this email.
-            </Text>
-            <Text className="text-[#898989] text-sm mt-8">
-              Best regards,
-              <br />
-              The Team
-            </Text>
+
+            <Section className="mt-8 border-t border-gray-200 pt-4">
+              <Text className="text-gray-500 text-sm text-center">
+                Employee Management System
+              </Text>
+            </Section>
           </Container>
         </TailwindWrapper>
       </Body>
     </Html>
   );
 };
-
-export default VerificationEmail;

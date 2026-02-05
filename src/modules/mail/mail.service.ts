@@ -4,9 +4,8 @@ import { render } from '@react-email/render'
 // import { EmailParams, MailerSend, Recipient, Sender } from 'mailersend';
 // import { EmailOptions } from '../../utils/mailersend';
 import { sendEmail } from 'src/lib/utils/resend'
-import { ResearchGroupInvitationEmail } from './templates/ResearchGroupInvitationEmail'
+import { AttendanceEmail } from './templates/AttendanceEmail'
 import { ResetPasswordEmail } from './templates/ResetPasswordEmail'
-import { UserJoinedGroupEmail } from './templates/UserJoinedGroupEmail'
 import { VerificationEmail } from './templates/VerificationEmail'
 import { WelcomeEmail } from './templates/WelcomeEmail'
 
@@ -133,15 +132,13 @@ export class MailService {
    * Send a welcome email to new users.
    * @param to Recipient email address.
    * @param fullName The full name of the recipient.
-   * @param password The initial password for the account.
    */
-  async sendWelcomeEmail (to: string, fullName: string, password: string) {
-    const subject = 'Welcome to GradVers - Your Academic Journey Starts Here!'
+  async sendWelcomeEmail (to: string, fullName: string) {
+    const subject = 'Welcome to Employee Management System'
     const emailHtml = await render(
       WelcomeEmail({
         fullName,
         email: to,
-        password,
       }),
     )
 
@@ -152,44 +149,18 @@ export class MailService {
     })
   }
 
-  async sendUserJoinedGroupEmail (
+  async sendAttendanceEmail (
     to: string,
     fullName: string,
-    groupName: string,
-    inviterName: string,
+    type: 'Clock In' | 'Clock Out',
+    time: string,
   ) {
-    const subject = `You've joined ${groupName}! 🎓`
+    const subject = `Attendance Notification: ${type}`
     const emailHtml = await render(
-      UserJoinedGroupEmail({
+      AttendanceEmail({
         fullName,
-        groupName,
-        inviterName,
-      }),
-    )
-
-    await this.sendEmail({
-      to,
-      subject,
-      html: emailHtml,
-    })
-  }
-
-  async sendResearchGroupInvitationEmail (
-    to: string,
-    inviteeName: string | undefined,
-    groupName: string,
-    inviterName: string,
-    invitationLink: string,
-    message?: string,
-  ): Promise<void> {
-    const subject = `Invitation to join ${groupName} 🎓`
-    const emailHtml = await render(
-      ResearchGroupInvitationEmail({
-        inviteeName,
-        groupName,
-        inviterName,
-        message,
-        invitationLink,
+        type,
+        time,
       }),
     )
 

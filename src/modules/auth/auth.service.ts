@@ -253,6 +253,13 @@ export class AuthService {
     // Delete the used verification code
     await this.verificationRepository.remove(verification)
 
+    // Send welcome email
+    try {
+      await this.mailService.sendWelcomeEmail(user.email, `${user.firstName} ${user.lastName}`)
+    } catch (error) {
+      console.log('Error sending welcome email', error)
+    }
+
     return true
   }
 
