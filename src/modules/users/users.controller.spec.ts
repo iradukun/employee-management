@@ -1,13 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
-import { ApiResponse } from '../../lib/types/api-response';
+import { Test, TestingModule } from '@nestjs/testing'
+import { AuthGuard } from '../../guards/auth.guard'
+import { RolesGuard } from '../../guards/roles.guard'
+import { ApiResponse } from '../../lib/types/api-response'
+import { CreateUserDto } from './dto/create-user.dto'
+import { User } from './entities/user.entity'
+import { UsersController } from './users.controller'
+import { UsersService } from './users.service'
 
 describe('UsersController', () => {
-  let controller: UsersController;
-  let usersService: Partial<UsersService>;
+  let controller: UsersController
+  let usersService: Partial<UsersService>
 
   beforeEach(async () => {
     usersService = {
@@ -16,7 +18,7 @@ describe('UsersController', () => {
       createUser: jest.fn(),
       updateUser: jest.fn(),
       deleteUser: jest.fn(),
-    };
+    }
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
@@ -26,14 +28,19 @@ describe('UsersController', () => {
           useValue: usersService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .compile()
 
-    controller = module.get<UsersController>(UsersController);
-  });
+    controller = module.get<UsersController>(UsersController)
+  })
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+    expect(controller).toBeDefined()
+  })
 
   describe('create', () => {
     it('should create a user', async () => {
@@ -44,27 +51,27 @@ describe('UsersController', () => {
         phoneNumber: '0987654321',
         password: 'password123',
         roles: [],
-      };
-      const user = new User();
-      Object.assign(user, createUserDto);
-      user.id = '2';
+      }
+      const user = new User()
+      Object.assign(user, createUserDto)
+      user.id = '2'
 
-      (usersService.createUser as jest.Mock).mockResolvedValue(user);
+      ;(usersService.createUser as jest.Mock).mockResolvedValue(user)
 
-      const result = await controller.create(createUserDto);
-      expect(result).toBeInstanceOf(ApiResponse);
-      expect(result.data).toEqual(user);
-    });
-  });
+      const result = await controller.create(createUserDto)
+      expect(result).toBeInstanceOf(ApiResponse)
+      expect(result.data).toEqual(user)
+    })
+  })
 
   describe('findAll', () => {
     it('should return an array of users', async () => {
-      const users = [new User(), new User()];
-      (usersService.findAll as jest.Mock).mockResolvedValue(users);
+      const users = [new User(), new User()]
+      ;(usersService.findAll as jest.Mock).mockResolvedValue(users)
 
-      const result = await controller.findAll(0, 10);
-      expect(result).toBeInstanceOf(ApiResponse);
-      expect(result.data).toHaveLength(2);
-    });
-  });
-});
+      const result = await controller.findAll(0, 10)
+      expect(result).toBeInstanceOf(ApiResponse)
+      expect(result.data).toHaveLength(2)
+    })
+  })
+})
