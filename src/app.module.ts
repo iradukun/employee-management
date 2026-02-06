@@ -1,9 +1,11 @@
+import { BullModule } from '@nestjs/bull'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { BullModule } from '@nestjs/bull'
+import { AttendanceModule } from './modules/attendance/attendance.module'
 import { Attendance } from './modules/attendance/entities/attendance.entity'
 import { AuthModule } from './modules/auth/auth.module'
+import { MailModule } from './modules/mail/mail.module'
 import { Role } from './modules/users/entities/role.entity'
 import { User } from './modules/users/entities/user.entity'
 import { Verification } from './modules/users/entities/verification.entity'
@@ -38,6 +40,8 @@ import { UsersModule } from './modules/users/users.module'
     }),
     AuthModule,
     UsersModule,
+    AttendanceModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],

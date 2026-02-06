@@ -6,6 +6,7 @@ import { CurrentUser } from '../../decorators/current-user.decorator'
 import { AuthGuard } from '../../guards/auth.guard'
 import { User } from '../users/entities/user.entity'
 import { AttendanceService } from './attendance.service'
+import { Attendance } from './entities/attendance.entity'
 import { ReportsService } from './reports.service'
 
 @ApiTags('attendance')
@@ -19,19 +20,31 @@ export class AttendanceController {
   ) {}
 
   @Post('clock-in')
-  @ApiResponse({ status: 201, description: 'Clocked in successfully.' })
+  @ApiResponse({
+    status: 201,
+    description: 'Clocked in successfully.',
+    type: Attendance,
+  })
   async clockIn (@CurrentUser() user: User) {
     return this.attendanceService.clockIn(user)
   }
 
   @Post('clock-out')
-  @ApiResponse({ status: 200, description: 'Clocked out successfully.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Clocked out successfully.',
+    type: Attendance,
+  })
   async clockOut (@CurrentUser() user: User) {
     return this.attendanceService.clockOut(user)
   }
 
   @Get('history')
-  @ApiResponse({ status: 200, description: 'Get attendance history.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get attendance history.',
+    type: [Attendance],
+  })
   async getHistory (@CurrentUser() user: User) {
     return this.attendanceService.getHistory(user)
   }
@@ -39,7 +52,15 @@ export class AttendanceController {
   @Get('reports/excel')
   @ApiResponse({
     status: 200,
-    description: 'Download attendance report (Excel).',
+    description: 'Download attendance report (Excel file).',
+    content: {
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {
+        schema: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
   })
   @ApiQuery({ name: 'startDate', required: false, type: String })
   @ApiQuery({ name: 'endDate', required: false, type: String })
@@ -73,7 +94,15 @@ export class AttendanceController {
   @Get('reports/pdf')
   @ApiResponse({
     status: 200,
-    description: 'Download attendance report (PDF).',
+    description: 'Download attendance report (PDF file).',
+    content: {
+      'application/pdf': {
+        schema: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
   })
   @ApiQuery({ name: 'startDate', required: false, type: String })
   @ApiQuery({ name: 'endDate', required: false, type: String })

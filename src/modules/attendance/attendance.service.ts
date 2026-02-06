@@ -42,11 +42,21 @@ export class AttendanceService {
 
     const savedAttendance = await this.attendanceRepository.save(attendance)
 
-    await this.attendanceQueue.add('clock-in', {
-      email: user.email,
-      name: `${user.firstName} ${user.lastName}`,
-      time: savedAttendance.entryTime.toLocaleString(),
-    })
+    try {
+      const addJob = this.attendanceQueue.add('clock-in', {
+        email: user.email,
+        name: `${user.firstName} ${user.lastName}`,
+        time: savedAttendance.entryTime.toLocaleString(),
+      })
+      // Timeout after 2 seconds to prevent hanging if Redis is down
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Queue timeout')), 2000),
+      )
+      await Promise.race([addJob, timeout])
+    } catch (error) {
+      console.error('Failed to add clock-in job to queue:', error)
+      // Continue execution even if email notification fails
+    }
 
     return savedAttendance
   }
@@ -69,11 +79,21 @@ export class AttendanceService {
       activeAttendance,
     )
 
-    await this.attendanceQueue.add('clock-out', {
-      email: user.email,
-      name: `${user.firstName} ${user.lastName}`,
-      time: savedAttendance.exitTime.toLocaleString(),
-    })
+    try {
+      const addJob = this.attendanceQueue.add('clock-out', {
+        email: user.email,
+        name: `${user.firstName} ${user.lastName}`,
+        time: savedAttendance.exitTime.toLocaleString(),
+      })
+      // Timeout after 2 seconds to prevent hanging if Redis is down
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Queue timeout')), 2000),
+      )
+      await Promise.race([addJob, timeout])
+    } catch (error) {
+      console.error('Failed to add clock-out job to queue:', error)
+      // Continue execution even if email notification fails
+    }
 
     return savedAttendance
   }

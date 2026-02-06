@@ -7,7 +7,6 @@ import {
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
-import { log } from 'console'
 import type { AuthRequest, TokenProps } from 'src/lib/types'
 import { codeGenerator } from 'src/lib/utils/func.util'
 import { MoreThan, Repository } from 'typeorm'
@@ -55,19 +54,9 @@ export class AuthService {
 
   async login (loginDto: LoginDto): Promise<LoginPayload> {
     let user: User | null = null
-    const credentialType = await this.validateAll(loginDto.credential)
-    log('The credential type is ' + credentialType)
 
-    switch (credentialType) {
-      case 1:
-        user = await this.validateEmailUser(
-          loginDto.credential,
-          loginDto.password,
-        )
-        break
-      default:
-        throw new UnauthorizedException('Invalid credential type')
-    }
+    // Only support email login now
+    user = await this.validateEmailUser(loginDto.email, loginDto.password)
 
     if (!user) {
       throw new UnauthorizedException('User not found or invalid credentials')
