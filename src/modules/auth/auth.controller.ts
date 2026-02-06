@@ -49,6 +49,13 @@ export class AuthController {
     )
   }
 
+  @Allow()
+  @Post('/logout')
+  @SwaggerResponse({ type: String })
+  async logout (): Promise<ApiResponse<string>> {
+    return new ApiResponse<string>(true, 'Logged out successfully', null, 200)
+  }
+
   // resend verification code
   @Allow()
   @Post('/resend-verification-code')
