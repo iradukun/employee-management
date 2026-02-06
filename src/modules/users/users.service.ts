@@ -57,6 +57,17 @@ export class UsersService {
         )
       }
     }
+
+    if (data.employeeIdentifier) {
+      const existingUserEmpId = await this.userRepository.findOne({
+        where: { employeeIdentifier: data.employeeIdentifier },
+      })
+      if (existingUserEmpId) {
+        throw new BadRequestException(
+          'User already with this Employee Identifier exists',
+        )
+      }
+    }
     const hashedPassword = await this.hashPassword(data.password)
 
     // Fetch roles
@@ -123,6 +134,17 @@ export class UsersService {
       relations: ['roles'],
     })
     if (!user) throw new BadRequestException('User not found')
+
+    if (data.employeeIdentifier) {
+      const existingUserEmpId = await this.userRepository.findOne({
+        where: { employeeIdentifier: data.employeeIdentifier },
+      })
+      if (existingUserEmpId && existingUserEmpId.id !== user.id) {
+        throw new BadRequestException(
+          'User already with this Employee Identifier exists',
+        )
+      }
+    }
 
     if (data.password) {
       data.password = await this.hashPassword(data.password)

@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Res, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common'
+import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
+import { Between, LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
 import { CurrentUser } from '../../decorators/current-user.decorator'
 import { AuthGuard } from '../../guards/auth.guard'
 import { User } from '../users/entities/user.entity'
@@ -40,8 +41,23 @@ export class AttendanceController {
     status: 200,
     description: 'Download attendance report (Excel).',
   })
-  async downloadExcel (@Res() res: Response) {
-    const attendances = await this.attendanceService.findAll()
+  @ApiQuery({ name: 'startDate', required: false, type: String })
+  @ApiQuery({ name: 'endDate', required: false, type: String })
+  async downloadExcel (
+    @Res() res: Response,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    const where: any = {}
+    if (startDate && endDate) {
+      where.entryTime = Between(new Date(startDate), new Date(endDate))
+    } else if (startDate) {
+      where.entryTime = MoreThanOrEqual(new Date(startDate))
+    } else if (endDate) {
+      where.entryTime = LessThanOrEqual(new Date(endDate))
+    }
+
+    const attendances = await this.attendanceService.findAll({ where })
     const buffer = await this.reportsService.generateExcel(attendances)
 
     res.set({
@@ -59,8 +75,23 @@ export class AttendanceController {
     status: 200,
     description: 'Download attendance report (PDF).',
   })
-  async downloadPdf (@Res() res: Response) {
-    const attendances = await this.attendanceService.findAll()
+  @ApiQuery({ name: 'startDate', required: false, type: String })
+  @ApiQuery({ name: 'endDate', required: false, type: String })
+  async downloadPdf (
+    @Res() res: Response,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    const where: any = {}
+    if (startDate && endDate) {
+      where.entryTime = Between(new Date(startDate), new Date(endDate))
+    } else if (startDate) {
+      where.entryTime = MoreThanOrEqual(new Date(startDate))
+    } else if (endDate) {
+      where.entryTime = LessThanOrEqual(new Date(endDate))
+    }
+
+    const attendances = await this.attendanceService.findAll({ where })
     const buffer = await this.reportsService.generatePdf(attendances)
 
     res.set({
