@@ -71,11 +71,21 @@ export class AttendanceController {
   ) {
     const where: any = {}
     if (startDate && endDate) {
-      where.entryTime = Between(new Date(startDate), new Date(endDate))
+      const start = new Date(startDate)
+      const end = new Date(endDate)
+      // If endDate is just a date (without time), set it to end of day
+      if (endDate.length <= 10) {
+        end.setHours(23, 59, 59, 999)
+      }
+      where.entryTime = Between(start, end)
     } else if (startDate) {
       where.entryTime = MoreThanOrEqual(new Date(startDate))
     } else if (endDate) {
-      where.entryTime = LessThanOrEqual(new Date(endDate))
+      const end = new Date(endDate)
+      if (endDate.length <= 10) {
+        end.setHours(23, 59, 59, 999)
+      }
+      where.entryTime = LessThanOrEqual(end)
     }
 
     const attendances = await this.attendanceService.findAll({ where })
@@ -113,11 +123,21 @@ export class AttendanceController {
   ) {
     const where: any = {}
     if (startDate && endDate) {
-      where.entryTime = Between(new Date(startDate), new Date(endDate))
+      const start = new Date(startDate)
+      const end = new Date(endDate)
+      // If endDate is just a date (without time), set it to end of day
+      if (endDate.length <= 10) {
+        end.setHours(23, 59, 59, 999)
+      }
+      where.entryTime = Between(start, end)
     } else if (startDate) {
       where.entryTime = MoreThanOrEqual(new Date(startDate))
     } else if (endDate) {
-      where.entryTime = LessThanOrEqual(new Date(endDate))
+      const end = new Date(endDate)
+      if (endDate.length <= 10) {
+        end.setHours(23, 59, 59, 999)
+      }
+      where.entryTime = LessThanOrEqual(end)
     }
 
     const attendances = await this.attendanceService.findAll({ where })

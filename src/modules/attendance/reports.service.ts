@@ -35,12 +35,25 @@ export class ReportsService {
     doc.text('Attendance Report', 105, 20, { align: 'center' })
 
     doc.setFontSize(12)
-    let y = 40
+    doc.text('Employee', 20, 40)
+    doc.text('Entry Time', 80, 40)
+    doc.text('Exit Time', 140, 40)
+    
+    // Draw a line under headers
+    doc.line(20, 42, 190, 42)
+
+    let y = 50
 
     attendances.forEach((att, index) => {
       if (y > 280) {
         doc.addPage()
         y = 20
+        // Re-print headers on new page
+        doc.text('Employee', 20, y)
+        doc.text('Entry Time', 80, y)
+        doc.text('Exit Time', 140, y)
+        doc.line(20, y + 2, 190, y + 2)
+        y += 10
       }
 
       const name = att.user
@@ -49,7 +62,9 @@ export class ReportsService {
       const entry = att.entryTime ? att.entryTime.toLocaleString() : ''
       const exit = att.exitTime ? att.exitTime.toLocaleString() : 'N/A'
 
-      doc.text(`${index + 1}. ${name} | In: ${entry} | Out: ${exit}`, 20, y)
+      doc.text(name, 20, y)
+      doc.text(entry, 80, y)
+      doc.text(exit, 140, y)
       y += 10
     })
 
