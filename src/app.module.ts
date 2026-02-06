@@ -45,7 +45,7 @@ import { UsersModule } from './modules/users/users.module'
     AttendanceModule,
     MailModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
