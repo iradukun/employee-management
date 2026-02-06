@@ -62,7 +62,7 @@ describe('AuthController', () => {
   describe('login', () => {
     it('should return a JWT token', async () => {
       const loginDto: LoginDto = {
-        credential: 'john@example.com',
+        email: 'john@example.com',
         password: 'password123',
       }
       const payload: LoginPayload = {

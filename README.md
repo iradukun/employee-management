@@ -1,134 +1,113 @@
-# Employee Management System API
+# Employee Management API
 
-A robust NestJS-based API for managing employees, attendance, and reports.
+## Description
+
+An employee management software API built with NestJS, featuring authentication, employee CRUD, attendance management, and reporting.
 
 ## Features
 
-- **Authentication**: Secure Signup, Login, Email Verification, and Password Reset using JWT and Email OTPs.
-- **Employee Management**: CRUD operations for employees (Users) with Role-Based Access Control (RBAC).
-- **Attendance Tracking**: Clock-in/Clock-out functionality with email notifications via Bull Queues (Redis).
-- **Reports**: Generate and download Attendance reports in Excel and PDF formats.
-- **Security**: Password hashing (Bcrypt), JWT strategies, and Input Validation (Class-Validator).
-- **Documentation**: Interactive API documentation via Swagger.
+- **Authentication**: Register, Login, Logout, Forgot Password, Reset Password, Email Verification.
+- **Employee Management**: CRUD operations for employees (names, email, employeeIdentifier, phoneNumber).
+- **Attendance**: Clock In/Out functionality with email notifications.
+- **Reports**: Generate PDF and Excel reports for attendance history, with date filtering.
+- **Email Notifications**: Automated emails for welcome, verification, password reset, and attendance actions using queues.
 
-## Tech Stack
+## Stack & Tools
 
-- **Framework**: NestJS
-- **Language**: TypeScript
-- **Database**: MySQL (via TypeORM)
-- **Queue**: Bull (Redis) for background jobs (email sending)
-- **Validation**: class-validator, class-transformer
+- **Framework**: NestJS v11
+- **Database**: MySQL with TypeORM
+- **Authentication**: PassportJS (JWT)
+- **Email**: Resend (with local fallback), React Email
+- **Queues**: Bull (Redis)
+- **Reports**: jsPDF, ExcelJS
+- **Testing**: Jest
 - **Documentation**: Swagger (OpenAPI)
-- **Tools**: pnpm, Docker (optional for DB/Redis)
-
-## Prerequisites
-
-- Node.js (v18+)
-- pnpm
-- MySQL
-- Redis (for Email Queue)
 
 ## Installation
 
-1.  **Clone the repository:**
+1.  Clone the repository:
     ```bash
     git clone <repository-url>
-    cd <repository-directory>
+    cd employee-management-api
     ```
 
-2.  **Install dependencies:**
+2.  Install dependencies:
     ```bash
-    pnpm install
+    npm install
     ```
 
-3.  **Environment Configuration:**
-    Create a `.env` file in the root directory based on `.env.example` (or use the provided variables below):
-
+3.  Configure Environment Variables:
+    Create a `.env` file in the root directory (copy from `.env.example` if available) and set the following:
     ```env
-    # Database
     DB_HOST=localhost
     DB_PORT=3306
     DB_USERNAME=root
     DB_PASSWORD=your_password
-    DB_DATABASE=academic_bridge_db
+    DB_NAME=employee_management
 
-    # JWT
-    JWT_SECRET=super-secret-key
-    JWT_EXPIRES_IN=1d
-
-    # Email (SMTP)
-    MAIL_HOST=smtp.example.com
-    MAIL_USER=user@example.com
-    MAIL_PASSWORD=password
-    MAIL_FROM=noreply@example.com
-
-    # Redis (for Bull Queue)
     REDIS_HOST=localhost
     REDIS_PORT=6379
 
-    # Admin Setup
-    ADMIN_KEY=secret_admin_key_for_seeding
+    SECRET_KEY=your_secret_key
+    
+    # Resend API Key (or use 're_123' for local simulation)
+    RESEND_API_KEY=your_resend_api_key
     ```
 
-4.  **Run Migrations (Synchronization):**
-    This project uses `synchronize: true` for development. Ensure your database exists.
+4.  Database Setup:
+    Ensure MySQL and Redis are running.
+    ```bash
+    npm run setup
+    # Or manually:
+    # npm run db:init
+    # npm run db:seed
+    ```
 
 ## Running the Application
 
-### Development Mode
 ```bash
-pnpm run start:dev
+# Development
+npm run start:dev
+
+# Production
+npm run start:prod
 ```
 
-### Production Mode
+The API will be available at `http://localhost:3000`.
+Swagger documentation is available at `http://localhost:3000/api`.
+
+## Testing
+
 ```bash
-pnpm run build
-pnpm run start:prod
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Test coverage
+npm run test:cov
 ```
 
-## Running Tests
-
-### Unit Tests
-```bash
-pnpm run test
-```
-
-### E2E Tests
-```bash
-pnpm run test:e2e
-```
-
-## API Documentation
-
-Once the application is running, visit:
-`http://localhost:3000/api`
-
-## Key Endpoints
+## API Endpoints
 
 ### Auth
 - `POST /auth/signup`: Register a new user.
 - `POST /auth/login`: Login and receive JWT.
-- `POST /auth/verify-email`: Verify account using OTP.
+- `POST /auth/verify-account`: Verify email with code.
 - `POST /auth/forgot-password`: Request password reset.
-- `POST /auth/reset-password`: Reset password using OTP.
+- `POST /auth/reset-password`: Reset password with token.
 
-### Users (Protected)
-- `GET /users`: List all users (Admin only).
-- `GET /users/:id`: Get user details (Admin or Self).
-- `PUT /users/:id`: Update user details (Admin or Self).
-- `DELETE /users/:id`: Delete user (Admin only).
+### Users
+- `GET /users`: Get all users (Admin only).
+- `GET /users/:id`: Get user details.
+- `POST /users`: Create a new user (Admin only).
+- `PUT /users/:id`: Update user details.
+- `DELETE /users/:id`: Delete a user (Admin only).
 
-### Attendance (Protected)
+### Attendance
 - `POST /attendance/clock-in`: Record entry time.
 - `POST /attendance/clock-out`: Record exit time.
-- `GET /attendance/history`: View personal attendance history.
-- `GET /attendance/reports/excel`: Download Excel report (Admin/All).
-- `GET /attendance/reports/pdf`: Download PDF report (Admin/All).
-
-## Deployment
-
-The application is container-ready. Ensure environment variables are set in your deployment platform (e.g., Render, Railway, AWS).
-
-## License
-
-[MIT](LICENSE)
+- `GET /attendance/history`: Get own attendance history.
+- `GET /attendance/reports/excel`: Download Excel report (supports `startDate` and `endDate` query params).
+- `GET /attendance/reports/pdf`: Download PDF report (supports `startDate` and `endDate` query params).
